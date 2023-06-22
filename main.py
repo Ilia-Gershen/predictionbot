@@ -3,6 +3,8 @@ from typing import Final
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 
+import pandas as pd
+
 TOKEN: Final = '5660612955:AAHwjnbuOa-PLXv_hR4vrKGT0OKnH-qovx0'
 BOT_USERNAME: Final = '@predscazatelcryptobot'
 
@@ -42,10 +44,16 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
   await query.answer()
 
   if query.data == 'btc':
-    await query.edit_message_text(text="Here is your prediction of BTC closing price for today: ")
+    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    prediction = data.BTC
+    print(type(prediction))
+    await query.edit_message_text(text="Here is your prediction of BTC closing price for the next 7 days: \n" + str(prediction))
   
   elif query.data == 'eth':
-    await query.edit_message_text(text="Here is your prediction of ETH closing price for today: ")
+    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    prediction = data.ETH
+    print(type(prediction))
+    await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n" + str(prediction))
 
   elif query.data == "all":
     await query.edit_message_text(text="Here is your prediction of closing price for all available coins: ")
