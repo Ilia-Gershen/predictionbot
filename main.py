@@ -4,6 +4,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 
 import pandas as pd
+from datetime import date
 
 TOKEN: Final = '5660612955:AAHwjnbuOa-PLXv_hR4vrKGT0OKnH-qovx0'
 BOT_USERNAME: Final = '@predscazatelcryptobot'
@@ -43,17 +44,39 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   await query.answer()
 
+  days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
   if query.data == 'btc':
     data = pd.read_csv("predictionbot/"+query.data+".csv")
     prediction = data.BTC
-    print(type(prediction))
-    await query.edit_message_text(text="Here is your prediction of BTC closing price for the next 7 days: \n" + str(prediction))
+    prediction = prediction.to_list()
+
+    #now we have to convert it into column of values with green and red arrows
+    today = date.today().weekday()
+    ans = " "
+    for i in range(len(prediction)):
+      if today >= 7:
+        today = today - 7
+      ans += days[today] + '     ' + str(prediction[i]) + '\n '
+      today += 1
+
+    await query.edit_message_text(text="Here is your prediction of BTC closing price for the next 7 days: \n\n" + ans)
   
   elif query.data == 'eth':
     data = pd.read_csv("predictionbot/"+query.data+".csv")
     prediction = data.ETH
-    print(type(prediction))
-    await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n" + str(prediction))
+    prediction = prediction.to_list()
+
+    #now we have to convert it into column of values with green and red arrows
+    today = date.today().weekday()
+    ans = " "
+    for i in range(len(prediction)):
+      if today >= 7:
+        today = today - 7
+      ans += days[today] + '     ' + str(prediction[i]) + '\n '
+      today += 1
+
+    await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
 
   elif query.data == "all":
     await query.edit_message_text(text="Here is your prediction of closing price for all available coins: ")
@@ -93,6 +116,7 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
   print(f'Update {update} caused error {context.error}')
 
 if __name__ == '__main__':
+
   print('Starting BOT')
   app = Application.builder().token(TOKEN).build()
 
@@ -113,4 +137,6 @@ if __name__ == '__main__':
 
   # Polls the bot
   print('Polling ....')
+  
+  #instead of just polling we will do infinite loop with pooling and status update
   app.run_polling(poll_interval=3)

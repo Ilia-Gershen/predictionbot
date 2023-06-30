@@ -9,14 +9,19 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 import csv
 
+#will try to launch bot after the prediction is made
+import schedule
+import time
+
 def getdata(coin: str): #downloading data from yhoo financa and saves it to data.csv file
     #converting input string to capitals
     coin = coin.upper()
 
-    data = yf.download(coin+'-USD', interval= '1d') #we get all the dates available since 2014 
-    print(type(data)) #the data type is the same as in typ
-    print(data.head())
-    print(data.dtypes)
+    data = yf.download(coin+'-USD', interval= '1d') #we get all the dates available since 2014
+    #prints show if everything goes well 
+    #print(type(data)) #the data type is the same as in typ
+    #print(data.head())
+    #print(data.dtypes)
     #empty file before writing
     f = open('predictionbot/data.csv', "w+")
     f.close()
@@ -171,18 +176,13 @@ def predmodel(coin: str):
   ETH_Train_X, ETH_Train_Y, ETH_Val_X, ETH_Val_Y, ETH_Test_X, ETH_Test_Y = Dataset(ETH)
 
   #graph printing to show the data split
-  plt.figure(figsize = (20, 5))
-
-  plt.plot(ETH['Date'][ETH['Date'] < '2021-12-30'], ETH['Close'][ETH['Date'] < '2021-12-30'], label = 'Training')
-  plt.plot(ETH['Date'][(ETH['Date'] >= '2022-01-01') & (ETH['Date'] < '2022-06-01')], ETH['Close'][(ETH['Date'] >= '2022-01-01') & (ETH['Date'] < '2022-06-01')], label = 'Validaiton')
-  plt.plot(ETH['Date'][ETH['Date'] >= '2022-06-02'], ETH['Close'][ETH['Date'] >= '2022-06-02'], label = 'Testing')
-  plt.xlabel('Time')
-  plt.ylabel('Closing Price')
-  plt.legend(loc = 'best')
-
-  epoch = [i for i in range(1, 1001)]
-  lrate = [scheduler(i) for i in range(1, 1001)]
-  #plt.plot(epoch, lrate)
+  #plt.figure(figsize = (20, 5))
+  #plt.plot(ETH['Date'][ETH['Date'] < '2021-12-30'], ETH['Close'][ETH['Date'] < '2021-12-30'], label = 'Training')
+  #plt.plot(ETH['Date'][(ETH['Date'] >= '2022-01-01') & (ETH['Date'] < '2022-06-01')], ETH['Close'][(ETH['Date'] >= '2022-01-01') & (ETH['Date'] < '2022-06-01')], label = 'Validaiton')
+  #plt.plot(ETH['Date'][ETH['Date'] >= '2022-06-02'], ETH['Close'][ETH['Date'] >= '2022-06-02'], label = 'Testing')
+  #plt.xlabel('Time')
+  #plt.ylabel('Closing Price')
+  #plt.legend(loc = 'best')
 
   callback = tf.keras.callbacks.LearningRateScheduler(scheduler) #applying new learning rate to callback that is used as input for model compilation
 
@@ -190,32 +190,32 @@ def predmodel(coin: str):
   ETH_Model.compile(optimizer = tf.keras.optimizers.Adam(), loss = 'mse', metrics = tf.keras.metrics.RootMeanSquaredError())
   ETH_hist = ETH_Model.fit(ETH_Train_X, ETH_Train_Y, epochs = 200, validation_data = (ETH_Val_X, ETH_Val_Y), callbacks = [callback])
 
-  DrawingTrainAndValLoss(ETH_hist.history)
+  #DrawingTrainAndValLoss(ETH_hist.history)
 
   ETH_prediction = ETH_Model.predict(ETH_Test_X)
 
   # Prediction closeup 
-  plt.figure(figsize = (10, 5))
+  #in case want to see the prediction in form of graph
+  #plt.figure(figsize = (10, 5))
 
-  plt.plot(ETH['Date'][ETH['Date'] >= '2022-06-02'], ETH['Close'][ETH['Date'] >= '2022-06-02'], label = 'Testing')
-  plt.plot(ETH['Date'][(ETH['Date'] >= '2022-06-02')&(ETH['Date'] <= '2023-06-14')], ETH_prediction.reshape(-1), label = 'Predictions')
-  plt.xlabel('Time')
-  plt.ylabel('Closing Price')
-  plt.legend(loc = 'best')
-  plt.show()
+  #plt.plot(ETH['Date'][ETH['Date'] >= '2022-06-02'], ETH['Close'][ETH['Date'] >= '2022-06-02'], label = 'Testing')
+  #plt.plot(ETH['Date'][(ETH['Date'] >= '2022-06-02')&(ETH['Date'] <= '2023-06-14')], ETH_prediction.reshape(-1), label = 'Predictions')
+  #plt.xlabel('Time')
+  #plt.ylabel('Closing Price')
+  #plt.legend(loc = 'best')
+  #plt.show()
 
-  CalculateErrors(ETH_Test_Y, ETH_prediction)
+  #in case need to see error values
+  #CalculateErrors(ETH_Test_Y, ETH_prediction)
 
   #now we have to take the last 7 values from ETH and pass it into model for prediction
   last_week = ETH['Close'].tail(7).to_numpy()
   last_week = last_week.reshape((-1, 7, 1))
   pred_for_next_week = ETH_Model.predict(last_week)
 
-  #have to figure out how to save it somewhere ? most probably txt file or exel
-  #first will try to conver pred to list
+  #converting results of prediction to list and saving in correct file
   pred_list = pred_for_next_week[0].tolist() #as result we get list of float values (7)
   pred_list = [int(x) for x in pred_list] #now we get list of 7 int pred for next week
-  print(pred_list)
   with open('predictionbot/'+coin+'.csv', 'w', encoding='UTF8') as f:
     coin = coin.upper()
     writer = csv.DictWriter(f, fieldnames = [coin])
@@ -223,7 +223,16 @@ def predmodel(coin: str):
     for elem in pred_list:
       writer.writerow({coin:elem})
 
-if __name__ == '__main__':
-
+def main():
   predmodel('btc')
   predmodel('eth')
+
+if __name__ == '__main__':
+
+  main()
+
+  schedule.every().day.at("15:15").do(main)
+
+  while True:
+    schedule.run_pending()
+    time.sleep(60)
