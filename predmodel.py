@@ -226,12 +226,14 @@ def predmodel(coin: str):
 def main():
   predmodel('btc')
   predmodel('eth')
+  predmodel('ltc')
+  predmodel('xmr')
 
 if __name__ == '__main__':
 
   main()
 
-  schedule.every().day.at("15:15").do(main)
+  schedule.every().day.at("00:10").do(main)
 
   while True:
     schedule.run_pending()

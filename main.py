@@ -26,7 +26,8 @@ async def menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
       InlineKeyboardButton("ETH", callback_data= 'eth')
     ],
     [
-      InlineKeyboardButton("Get all available", callback_data= 'all')
+      InlineKeyboardButton("LTC", callback_data= 'ltc'),
+      InlineKeyboardButton("XMR", callback_data= 'xmr')
     ],
     [
       InlineKeyboardButton("Nothing", callback_data= 'no')
@@ -78,8 +79,37 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
 
-  elif query.data == "all":
-    await query.edit_message_text(text="Here is your prediction of closing price for all available coins: ")
+  elif query.data == 'ltc':
+    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    prediction = data.LTC
+    prediction = prediction.to_list()
+
+    #now we have to convert it into column of values with green and red arrows
+    today = date.today().weekday()
+    ans = " "
+    for i in range(len(prediction)):
+      if today >= 7:
+        today = today - 7
+      ans += days[today] + '     ' + str(prediction[i]) + '\n '
+      today += 1
+
+    await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
+
+  elif query.data == 'xmr':
+    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    prediction = data.XMR
+    prediction = prediction.to_list()
+
+    #now we have to convert it into column of values with green and red arrows
+    today = date.today().weekday()
+    ans = " "
+    for i in range(len(prediction)):
+      if today >= 7:
+        today = today - 7
+      ans += days[today] + '     ' + str(prediction[i]) + '\n '
+      today += 1
+
+    await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
 
   else:
     await query.edit_message_text(text=f"Selected option: {query.data}")
