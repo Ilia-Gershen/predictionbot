@@ -23,9 +23,9 @@ def getdata(coin: str): #downloading data from yhoo financa and saves it to data
     #print(data.head())
     #print(data.dtypes)
     #empty file before writing
-    f = open('predictionbot/data.csv', "w+")
+    f = open('data.csv', "w+")
     f.close()
-    data.to_csv('predictionbot/data.csv', sep=',', index = True, encoding = 'utf-8')
+    data.to_csv('data.csv', sep=',', index = True, encoding = 'utf-8')
 
 def DrawingTrainAndValLoss(historyDict): #Function helps to draw the validation and training loss of models, as well as rmsr of training and validation
 
@@ -171,7 +171,7 @@ def scheduler(epoch):
 def predmodel(coin: str):
   
   getdata(coin)
-  ETH = pd.read_csv('predictionbot/data.csv')
+  ETH = pd.read_csv('data.csv')
 
   ETH_Train_X, ETH_Train_Y, ETH_Val_X, ETH_Val_Y, ETH_Test_X, ETH_Test_Y = Dataset(ETH)
 
@@ -216,7 +216,7 @@ def predmodel(coin: str):
   #converting results of prediction to list and saving in correct file
   pred_list = pred_for_next_week[0].tolist() #as result we get list of float values (7)
   pred_list = [int(x) for x in pred_list] #now we get list of 7 int pred for next week
-  with open('predictionbot/'+coin+'.csv', 'w', encoding='UTF8') as f:
+  with open(coin+'.csv', 'w', encoding='UTF8') as f:
     coin = coin.upper()
     writer = csv.DictWriter(f, fieldnames = [coin])
     writer.writeheader()

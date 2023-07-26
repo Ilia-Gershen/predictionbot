@@ -50,7 +50,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
   days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
   if query.data == 'btc':
-    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    data = pd.read_csv(query.data+".csv")
     prediction = data.BTC
     prediction = prediction.to_list()
 
@@ -66,7 +66,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of BTC closing price for the next 7 days: \n\n" + ans)
   
   elif query.data == 'eth':
-    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    data = pd.read_csv(query.data+".csv")
     prediction = data.ETH
     prediction = prediction.to_list()
 
@@ -82,7 +82,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
 
   elif query.data == 'ltc':
-    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    data = pd.read_csv(query.data+".csv")
     prediction = data.LTC
     prediction = prediction.to_list()
 
@@ -98,7 +98,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of LTC closing price for the next 7 days: \n\n" + ans)
 
   elif query.data == 'xmr':
-    data = pd.read_csv("predictionbot/"+query.data+".csv")
+    data = pd.read_csv(query.data+".csv")
     prediction = data.XMR
     prediction = prediction.to_list()
 
