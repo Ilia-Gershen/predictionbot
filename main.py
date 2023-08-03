@@ -11,7 +11,7 @@ import os
 import yfinance as yf
 import pickle
 
-TOKEN: Final = '5660612955:AAHwjnbuOa-PLXv_hR4vrKGT0OKnH-qovx0' #os.getenv('BOTAPIKEY')
+TOKEN: Final = os.getenv('BOTAPIKEY')
 BOT_USERNAME: Final = '@predscazatelcryptobot'
 
 # Commands
