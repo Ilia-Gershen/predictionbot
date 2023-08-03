@@ -13,6 +13,9 @@ import csv
 import schedule
 import time
 
+#for saving
+import pickle
+
 def getdata(coin: str): #downloading data from yhoo financa and saves it to data.csv file
     #converting input string to capitals
     coin = coin.upper()
@@ -74,7 +77,7 @@ def Dataset(Data):
 
   #Data for Training 
   #From 2018 to 2022
-  Train_Data = Data['Close'][Data['Date'] < '2021-12-30'].to_numpy() #taking data befor the given date
+  Train_Data = Data['Close'][Data['Date'] < '2022-12-30'].to_numpy() #taking data befor the given date
   TrainingData = []
   TrainingDataX = []
   TrainingDataY = []
@@ -99,7 +102,7 @@ def Dataset(Data):
 
   #Data for Validation
   #From 2022 to 2022-06
-  Val_Data = Data['Close'][(Data['Date'] >= '2022-01-01') & (Data['Date'] < '2022-06-01')].to_numpy() #taking data from given date to latest date
+  Val_Data = Data['Close'][(Data['Date'] >= '2023-01-01') & (Data['Date'] < '2023-06-01')].to_numpy() #taking data from given date to latest date
   ValData = []
   ValDataX = []
   ValDataY = []
@@ -124,7 +127,7 @@ def Dataset(Data):
   #Data for Testing 
   #From 2022-06 to the end
 
-  Test_Data = Data['Close'][Data['Date'] >= '2022-06-02'].to_numpy()
+  Test_Data = Data['Close'][Data['Date'] >= '2023-06-02'].to_numpy()
   TestData = []
   TestDataX = []
   TestDataY = []
@@ -206,22 +209,26 @@ def predmodel(coin: str):
   #plt.show()
 
   #in case need to see error values
-  #CalculateErrors(ETH_Test_Y, ETH_prediction)
+  CalculateErrors(ETH_Test_Y, ETH_prediction)
 
   #now we have to take the last 7 values from ETH and pass it into model for prediction
   last_week = ETH['Close'].tail(7).to_numpy()
   last_week = last_week.reshape((-1, 7, 1))
   pred_for_next_week = ETH_Model.predict(last_week)
 
+  #saving model
+  filename = coin + '.sav'
+  pickle.dump(ETH_Model, open(filename, 'wb'))
+
   #converting results of prediction to list and saving in correct file
-  pred_list = pred_for_next_week[0].tolist() #as result we get list of float values (7)
-  pred_list = [int(x) for x in pred_list] #now we get list of 7 int pred for next week
-  with open(coin+'.csv', 'w', encoding='UTF8') as f:
-    coin = coin.upper()
-    writer = csv.DictWriter(f, fieldnames = [coin])
-    writer.writeheader()
-    for elem in pred_list:
-      writer.writerow({coin:elem})
+  #pred_list = pred_for_next_week[0].tolist() #as result we get list of float values (7)
+  #pred_list = [int(x) for x in pred_list] #now we get list of 7 int pred for next week
+  #with open(coin+'.csv', 'w', encoding='UTF8') as f:
+  #  coin = coin.upper()
+  #  writer = csv.DictWriter(f, fieldnames = [coin])
+  #  writer.writeheader()
+  #  for elem in pred_list:
+  #    writer.writerow({coin:elem})
 
 def main():
   predmodel('btc')
@@ -233,8 +240,8 @@ if __name__ == '__main__':
 
   main()
 
-  schedule.every().day.at("00:10").do(main)
+  #schedule.every().day.at("00:10").do(main)
 
-  while True:
-    schedule.run_pending()
-    time.sleep(60)
+  #while True:
+  #  schedule.run_pending()
+  #  time.sleep(60)

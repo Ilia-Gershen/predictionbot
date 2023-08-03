@@ -8,7 +8,10 @@ from datetime import date
 
 import os
 
-TOKEN: Final = os.getenv('BOTAPIKEY')
+import yfinance as yf
+import pickle
+
+TOKEN: Final = '5660612955:AAHwjnbuOa-PLXv_hR4vrKGT0OKnH-qovx0' #os.getenv('BOTAPIKEY')
 BOT_USERNAME: Final = '@predscazatelcryptobot'
 
 # Commands
@@ -31,9 +34,6 @@ async def menu_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
       InlineKeyboardButton("LTC", callback_data= 'ltc'),
       InlineKeyboardButton("XMR", callback_data= 'xmr')
     ],
-    [
-      InlineKeyboardButton("Nothing", callback_data= 'no')
-    ],
   ]
 
   reply_markup = InlineKeyboardMarkup(keyboard)
@@ -49,10 +49,20 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
+  #load data for prediction
+  data = yf.download(query.data+'-USD', start="2023-07-01", interval= '1d')
+  loadedModel = pickle.load(open(query.data+'.sav', 'rb'))
+  last_week = data['Close'].tail(7).to_numpy()
+  last_week = last_week.reshape((-1, 7, 1))
+  pred_for_next_week = loadedModel.predict(last_week)
+  pred_list = pred_for_next_week[0].tolist()
+  pred_list = [int(x) for x in pred_list] #now we get list of 7 int pred for next week
+
   if query.data == 'btc':
-    data = pd.read_csv(query.data+".csv")
-    prediction = data.BTC
-    prediction = prediction.to_list()
+    #data = pd.read_csv(query.data+".csv")
+    #prediction = data.BTC
+
+    prediction = pred_list #prediction.to_list()
 
     #now we have to convert it into column of values with green and red arrows
     today = date.today().weekday()
@@ -66,9 +76,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of BTC closing price for the next 7 days: \n\n" + ans)
   
   elif query.data == 'eth':
-    data = pd.read_csv(query.data+".csv")
-    prediction = data.ETH
-    prediction = prediction.to_list()
+    #data = pd.read_csv(query.data+".csv")
+    #prediction = data.ETH
+    prediction = pred_list #prediction.to_list()
 
     #now we have to convert it into column of values with green and red arrows
     today = date.today().weekday()
@@ -82,9 +92,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of ETH closing price for the next 7 days: \n\n" + ans)
 
   elif query.data == 'ltc':
-    data = pd.read_csv(query.data+".csv")
-    prediction = data.LTC
-    prediction = prediction.to_list()
+    #data = pd.read_csv(query.data+".csv")
+    #prediction = data.LTC
+    prediction = pred_list #prediction.to_list()
 
     #now we have to convert it into column of values with green and red arrows
     today = date.today().weekday()
@@ -98,9 +108,9 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.edit_message_text(text="Here is your prediction of LTC closing price for the next 7 days: \n\n" + ans)
 
   elif query.data == 'xmr':
-    data = pd.read_csv(query.data+".csv")
-    prediction = data.XMR
-    prediction = prediction.to_list()
+    #data = pd.read_csv(query.data+".csv")
+    #prediction = data.XMR
+    prediction = pred_list #prediction.to_list()
 
     #now we have to convert it into column of values with green and red arrows
     today = date.today().weekday()
