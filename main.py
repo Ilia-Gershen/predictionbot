@@ -195,4 +195,6 @@ if __name__ == '__main__':
   HOOK_URL = 'https://predictionbot-yotx.codecapsules.co.za' + '/' + TOKEN
   Updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url=HOOK_URL)
   Updater.bot.setWebhook(HOOK_URL)
+part3
   Updater.idle()
+main
