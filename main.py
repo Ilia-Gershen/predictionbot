@@ -192,7 +192,7 @@ if __name__ == '__main__':
   #instead of just polling we will do infinite loop with pooling and status update
   #app.run_polling(poll_interval=3)
 
-  PORT = int(os.environ.get('PORT', '443'))
+  PORT = int(os.environ.get('PORT', '3000'))
   HOOK_URL = 'https://predictionbot-yotx.codecapsules.co.za' + '/' + TOKEN
   bot.setWebhook(HOOK_URL)
   updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
