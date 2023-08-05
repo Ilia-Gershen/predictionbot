@@ -195,7 +195,7 @@ if __name__ == '__main__':
   PORT = int(os.environ.get('PORT', '3000'))
   HOOK_URL = 'https://predictionbot-yotx.codecapsules.co.za' + '/' + TOKEN
   bot.setWebhook(HOOK_URL)
-  updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN)
+  updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url=HOOK_URL)
   updater.bot.setWebhook(HOOK_URL)
   updater.idle()
 
