@@ -160,30 +160,21 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == '__main__':
 
   print('Starting BOT')
-  #app = Application.builder().token(TOKEN).build()
-  bot = Bot(token = TOKEN)
   app = Application.builder().token(TOKEN).build()
-  updater = Updater(TOKEN, update_queue=True)
 
   # Commands
-  #app.add_handler(CommandHandler('start', start_command))
-  #app.add_handler(CommandHandler('help', help_command))
   app.add_handler(CommandHandler("start", start_command))
   app.add_handler(CommandHandler("help", help_command))
   
-  #app.add_handler(CommandHandler('menu', menu_command))
   app.add_handler(CommandHandler("menu", menu_command))
   
   # triggered when inline buttons are used by user
-  #app.add_handler(CallbackQueryHandler(button))
   app.add_handler(CallbackQueryHandler(button))
 
   # Messages
-  #app.add_handler(MessageHandler(filters.TEXT, handle_message))
   app.add_handler(MessageHandler(filters.TEXT, handle_message))
 
   # Errors
-  #app.add_error_handler(error)
   app.add_error_handler(error)
 
   # Polls the bot
@@ -192,10 +183,16 @@ if __name__ == '__main__':
   #instead of just polling we will do infinite loop with pooling and status update
   #app.run_polling(poll_interval=3)
 
-  PORT = int(os.environ.get('PORT', '3000'))
-  HOOK_URL = 'https://predictionbot-yotx.codecapsules.co.za' + '/' + TOKEN
-  bot.setWebhook(HOOK_URL)
-  updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url=HOOK_URL)
-  updater.bot.setWebhook(HOOK_URL)
-  updater.idle()
+  PORT = int(os.environ.get('PORT', '8443'))
+  #HOOK_URL = 'https://predictionbot-yotx.codecapsules.co.za' + '/' + TOKEN #do i need token here or not
+  #bot.setWebhook(HOOK_URL)
+  #updater.start_webhook(listen='0.0.0.0', port=PORT, url_path=TOKEN, webhook_url=HOOK_URL)
+  #updater.bot.setWebhook(HOOK_URL)
+  #updater.idle()
 
+  app.run_webhook(
+    listen="0.0.0.0",
+    port=PORT,
+    secret_token='averysecrettokenthatdoesntmakesence-lol',
+    webhook_url="https://telegram-bot6-08-23-4e71c05f7db2.herokuapp.com/"
+  )
