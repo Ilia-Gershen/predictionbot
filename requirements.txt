@@ -26,3 +26,4 @@ tzdata==2023.3
 urllib3==2.0.4
 webencodings==0.5.1
 yfinance==0.2.27
+keras==2.12.0
