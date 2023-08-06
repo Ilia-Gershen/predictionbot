@@ -193,5 +193,5 @@ if __name__ == '__main__':
     listen="0.0.0.0",
     port=PORT,
     secret_token='averysecrettokenthatdoesntmakesence-lol',
-    webhook_url="https://telegram-bot6-08-23-4e71c05f7db2.herokuapp.com/" + TOKEN
+    webhook_url="https://telegram-bot6-08-23-4e71c05f7db2.herokuapp.com/"
   )
