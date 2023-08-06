@@ -51,7 +51,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
   #load data for prediction
   data = yf.download(query.data+'-USD', start="2023-07-01", interval= '1d')
-  loadedModel = pickle.load(open(query.data+'.sav', 'rb'))
+  loadedModel = pickle.load(open('eth.sav', 'rb'))
   last_week = data['Close'].tail(7).to_numpy()
   last_week = last_week.reshape((-1, 7, 1))
   pred_for_next_week = loadedModel.predict(last_week)
@@ -194,5 +194,5 @@ if __name__ == '__main__':
     listen="0.0.0.0",
     port=PORT,
     secret_token='averysecrettokenthatdoesntmakesence-lol',
-    webhook_url="https://telegram-bot6-08-23-4e71c05f7db2.herokuapp.com/"
+    webhook_url="https://telegram-bot6-08-23-4e71c05f7db2.herokuapp.com/" + TOKEN
   )
